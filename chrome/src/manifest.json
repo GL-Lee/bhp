@@ -1,0 +1,25 @@
+{
+   "background": {
+      "scripts": ["background.js","js/jquery.js"]
+   },
+   "content_scripts": [
+    {
+      "matches": ["http://*/*"],
+      "js": ["js/nest.js","js/jquery.js"],
+      "css": ["css/panel.css","a.css"]
+    }
+  ],
+   "browser_action": {
+      "default_icon": "/images/icon_64.png",
+      "default_popup": "pop.html"
+   },
+   "description": "365\u5929\u6C14",
+   "icons": {
+      "128": "/images/icon_128.png",
+      "16": "/images/icon_16.png"
+   },
+   "manifest_version": 2,
+   "name": "365\u5929\u6C14",
+   "permissions": [ "tabs", "http://*/*", "https://*/*", "storage", "notifications" ],
+   "version": "1.0.0"
+}
