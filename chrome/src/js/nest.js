@@ -17,7 +17,7 @@ var WB_info = [
 			var scripts = html.match(/.*<script.*?\}\)<\/script>/g);
 			var tmpStr = "";
 			for(var i = 0; i < scripts.length; i++){
-				var result = scripts[i].match(/.*("<div.*div>").*/);
+				var result = scripts[i].match(/.*"html":(.*)\}\)<\/script>.*/);
 				if(result){
 					tmpStr = eval(result[1]);
 					wcontent = wcontent.add(tmpStr);
@@ -49,7 +49,7 @@ function getContent(html){
 		if(WB_info[i].site.test(nestButton.weiboUrl)){
 			var info = WB_info[i];
 			var pageContent = info.render(html);
-			wcontent.find(".W_face_radius img").attr("src", pageContent.find(info.headPicSrc).attr("src").replace("180","50"));
+			wcontent.find(".W_face_radius img").attr("src", pageContent.find(info.headPicSrc).attr("src"));
 			var nameA = pageContent.find(info.name);
 			wcontent.find(".WB_name").attr("href", nameA.attr("href")).text(nameA.text());
 			wcontent.find(".WB_text").append(pageContent.find(info.text).children());
