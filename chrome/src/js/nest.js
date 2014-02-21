@@ -1,4 +1,67 @@
+var W_face_radius = {
+	href: "/weiphone?from=feed&amp;loc=avatar",
+	title: "WeiPhone",
+	src: "http://tp1.sinaimg.cn/1880927244/50/40037050676/1"
+}
+var WB_info = [
+	{
+		site:/.*weibo\.com.*/,
+		headPicSrc: ".pf_head_pic img", //img
+		name:".username strong, .pf_info .name", //a
+		text:".WB_text",
+		media_list:".WB_media_list",
+		media_expand:"",
+		func:".WB_func",
+		render: function(html){
+			var wcontent = $(html);
+			var scripts = html.match(/.*<script.*?\}\)<\/script>/g);
+			var tmpStr = "";
+			for(var i = 0; i < scripts.length; i++){
+				var result = scripts[i].match(/.*("<div.*div>").*/);
+				if(result){
+					tmpStr = eval(result[1]);
+					wcontent = wcontent.add(tmpStr);
+				}
+			}
+	    	return wcontent;
+		}
+	}
+]
+
+var weiboHTML = '<div class="WB_feed_datail">'+
+		            '<div class="WB_face">'+
+		                '<a class="W_face_radius"><img/></a>'+
+		            '</div>'+
+		            '<div class="WB_detail">'+
+		                '<div class="WB_info">'+
+		                	'<a class="WB_name"></a>'+
+		                '</div>'+
+		                '<div class="WB_text"></div>'+
+		            	'<ul class="WB_media_list"></ul>'+
+		                '<div class="WB_media_expand S_bg1" style="display: none;"></div>'+
+		                '<div class="WB_func"></div>'+
+		        	'</div>'+
+		        '</div>';
+function getContent(html){
+	var wcontent = $(weiboHTML);
+	var siteUrl = location.href;
+	for(var i = 0; i < WB_info.length; i++){
+		if(WB_info[i].site.test(nestButton.weiboUrl)){
+			var info = WB_info[i];
+			var pageContent = info.render(html);
+			wcontent.find(".W_face_radius img").attr("src", pageContent.find(info.headPicSrc).attr("src").replace("180","50"));
+			var nameA = pageContent.find(info.name);
+			wcontent.find(".WB_name").attr("href", nameA.attr("href")).text(nameA.text());
+			wcontent.find(".WB_text").append(pageContent.find(info.text).children());
+			wcontent.find(".WB_media_list").append(pageContent.find(info.media_list).children());
+			wcontent.find(".WB_func").append(pageContent.find(info.func).children());
+			break;
+		}
+	}
+	return wcontent;
+}
 var nestButton = {
+	inited: false,
 	configs: [
 		{
 			site: /.*blog\.sina\.com\.cn.*/,
@@ -109,27 +172,32 @@ var nestButton = {
 			}
 		}
 	],
-	init: function(){
-		var buttonHTML = "<a href='javascript:void(0)'>ref</a>";
+	init: function(config){
+		if(this.inited) return;
+		var buttonHTML = "<a href='javascript:void(0)'>pick weibo</a>";
 		this.button = $(buttonHTML);
-		var configs = this.configs;
-		var url = location.href;
-		for(var i = 0; i < configs.length; i++){
-			if(configs[i].site.test(url)){
-				this.nest(configs[i]);
-				this.bindEvents();
-				break;
-			}
+		var buttonStyle = {
+			display: "block",
+			float: "right",
+			width: "75px",
+			height: "25px",
+			"line-height": "25px",
+			border: "solid 2px",
+			"margin-top": "5px",
+			"font-weight": "bold",
+			color: "blue",
+			"border-color": "grey",
 		}
+		this.button.css(buttonStyle);
+		this.nest(config);
+		this.bindEvents();
+		this.inited = true;
 
 	},
 	bindEvents: function(){
 		var _this = this;
 		this.button.bind("click", function(event){
-			// _this.openInput();
-			chrome.runtime.sendMessage({active: "getContent",url: "http://weibo.com/2167446614/AxIOuxjjh?ref=home"}, function(response) {
-			  console.log(response.farewell);
-			});
+			_this.openInput(event.clientX, event.clientY);
 			event.preventDefault();
 			event.stopPropagation();
 		});
@@ -137,43 +205,80 @@ var nestButton = {
 	nest: function(config){
 		this.button[config.nestFun]($(config.position));
 	},
-	openInput: function(){
+	openInput: function(left, top){
 		var inputPanel = $("#bhp-bbb");
 		if(inputPanel.length == 0){
 			var panelHTML = "<div id='bhp-bbb'>"+
 								"<input/>"+
+								"<a href='javascript:void(0)'>insert</a>"+
+								"<span style='display:none'>载入中...</span>"
 							"</div>";
-			var css = {
+			var divcss = {
 				position: "absolute",
-				display: "none"
+				"background-color": "white",
+				border: "solid 1px",
+				padding: "5px"
+			}
+			var inputcss = {
+				height: "25px",
+				width: "200px",
+				"margin-right": "10px"
 			}
 			inputPanel = $(panelHTML).appendTo($("body"));
-			inputPanel.css(css);
+			inputPanel.find("a").bind("click", function(){
+				var url = nestButton.weiboUrl = inputPanel.find("input").val();
+				if(!url) return;
+				chrome.runtime.sendMessage({active: "getContent",url: url}, function(response) {
+				  console.log(response.farewell);
+				});
+				inputPanel.find("span").show();
+				event.preventDefault();
+				event.stopPropagation();
+			})
+			inputPanel.css(divcss);
+			inputPanel.find("input").css(inputcss);
+			inputPanel.css("left", left+document.body.scrollLeft);
+			inputPanel.css("top", top+document.body.scrollTop+20);
 		}
 		inputPanel.show();
 	}
 }
-window.onload = function(){
-	nestButton.init();
-	chrome.runtime.onMessage.addListener(
-	  function(request, sender, sendResponse) {
-	    console.log(sender.tab ?
-	                "from a content script:" + sender.tab.url :
-	                "from the extension");
-	    if (request.active == "getContent"){
-	    	var doc = $("#SinaEditor_Iframe iframe")[0].contentWindow.document;
-	    	// var text = $(request.content);
-	    	var css = nestButton.weibocss[0].css;
-	    	nestButton.weibocss[0].getAddingContent($(request.content)).appendTo($( "body", doc));
-	    	var text = eval("\""+request.content.match(/.*(<div class=\\"PRF_modwrap PRF_onefeed clearfix.*div>).*/)[1]+"\"");
-	    	// text = $(text[text.length - 6]).text();
-	    	// text = text.match(/.*(<div.*div>).*/)[1];
-	    	var content = $(text);
-	    	content.appendTo($( "body", doc));
-	    	for(var i = 0; i < css.length; i++){
-	    		$(css[i].selector, doc).attr("style", css[i].style);
-	    	}
-	    }
-	      // sendResponse({farewell: "goodbye"});
-	});
+var configs = nestButton.configs;
+var config = null;
+var url = location.href;
+for(var i = 0; i < configs.length; i++){
+	if(configs[i].site.test(url)){
+		config = configs[i];
+	}
 }
+if(!config) return;
+chrome.runtime.onMessage.addListener(
+  function(request, sender, sendResponse) {
+    console.log(sender.tab ?
+                "from a wcontent script:" + sender.tab.url :
+                "from the extension");
+    if (request.active == "getContent"){
+    	var doc = $("#SinaEditor_Iframe iframe")[0].contentWindow.document;
+    	// var css = nestButton.weibocss[0].css;
+    	// nestButton.weibocss[0].getAddingContent($(request.wcontent)).appendTo($( "body", doc));
+    	var wcontent = getContent(request.html);
+    	wcontent.appendTo($( "body", doc));
+    	$("#bhp-bbb").hide().find("span").hide();
+    	// for(var i = 0; i < css.length; i++){
+    	// 	$(css[i].selector, doc).attr("style", css[i].style);
+    	// }
+    }
+      // sendResponse({farewell: "goodbye"});
+});
+
+function wbload(){
+	nestButton.init(config);
+}
+window.addEventListener("load", wbload)
+var interval = setInterval(function(){
+	if(nestButton.inited){
+		clearInterval(interval);
+		return;
+	}
+	wbload();
+}, 1000)
