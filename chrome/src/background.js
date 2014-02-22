@@ -8,6 +8,7 @@ function getPageContent (url, callback) {
         success: function(obj) {
         	var message = {};
         	message.active = "getContent";
+            message.url = url,
         	message.html = obj;
     		sendToContent(message);
         },
