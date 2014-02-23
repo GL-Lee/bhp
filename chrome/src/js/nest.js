@@ -17,6 +17,33 @@ var configs = {
 					color: "blue",
 					"border-color": "grey",
 				}
+			},
+			content:{
+				iframeSelector: "#SinaEditor_Iframe iframe",
+				appendPosition: "body",
+			}
+		},
+		{
+			site: /.*blog\.sohu\.com*/,
+			button:{
+				position: "#menuContainer",
+				nestFun: "appendTo",
+				buttonStyle: {
+					display: "block",
+					float: "right",
+					width: "75px",
+					height: "25px",
+					"line-height": "25px",
+					border: "solid 2px",
+					"margin-top": "5px",
+					"font-weight": "bold",
+					color: "blue",
+					"border-color": "grey",
+				}
+			},
+			content:{
+				iframeSelector: "#ifrEditorContainer iframe",
+				appendPosition: "body"
 			}
 		}
 	],
@@ -26,11 +53,12 @@ var configs = {
 			content:{
 				headPic_selector: ".pf_head_pic img",
 				username_selector: ".username strong, .pf_name .name",
-				detail_selector:".WB_detail",
+				detail_selector:".WB_detail div:first",
 				css:{},
 				reg:"\"html\":(.*?)\\}\\)<\/script>",
-				iframeSelector: "#SinaEditor_Iframe iframe",
-				appendPosition: "body",
+				time:".WB_time",
+				nbsp: ".icon_praised_b",
+				hiddenItems:".loading_gif",
 				processContent:"function process(content, html){var a=content;}"
 			}
 		},
@@ -42,50 +70,118 @@ var configs = {
 				detail_selector:".content",
 				css:{},
 				reg:"\"html\":(.*?)\\}\\)<\/script>",
-				iframeSelector: "#SinaEditor_Iframe iframe",
-				appendPosition: "body",
+				time:".WB_time",
+				nbsp: ".icon_praised_b",
+				hiddenItems:".loading_gif",
+				processContent:"function process(content, html){var a=content;}"
+			}
+		},
+		{
+			site: /http:\/\/t\.sohu\.com.*/,
+			content:{
+				headPic_selector: ".mainC .usr .avt a",
+				username_selector: ".mainC .usr .pd .nm a",
+				detail_selector:".twiC:first",
+				css:{},
 				processContent:"function process(content, html){var a=content;}"
 			}
 		}
 	]
 }
-var wb_confings = [
+var wb_style = [
 	{
 		site:/http:\/\/weibo\.com.*/,
-		headPicSrc: ".pf_head_pic img", //img
-		name:".username strong, .pf_info .name", //a
-		text:".WB_text",
-		media_list:".WB_media_list",
-		media_expand:"",
-		func:".WB_func",
-		content: "",
-		render: function(html){
-			var wcontent = $(html);
-			var scripts = html.match(/.*<script.*?\}\)<\/script>/g);
-			var tmpStr = "";
-			for(var i = 0; i < scripts.length; i++){
-				var result = scripts[i].match(/.*"html":(.*)\}\)<\/script>.*/);
-				if(result){
-					tmpStr = eval(result[1]);
-					wcontent = wcontent.add(tmpStr);
-				}
-			}
-	    	return wcontent;
-		}
-	},
-	{
-		site:/http:\/\/e\.weibo\.com.*/,
-		content:"",
-		css:[
+		style:[
 			{
-				selector:"",
-				style:{
-
-				}
+				selector: ".icon_praised_b",
+				style: "width: 13px;height: 14px; display: inline-block; background-position: -75px 0;vertical-align: text-bottom;background-image: url('http://img.t.sinajs.cn/t5/style/images/common/icon.png?id=1392885674388')"
+			},
+			{
+				selector: " .WB_info .WB_name",
+				style: "text-decoration: none; color: rgb(51, 51, 51); font-size: 14px; font-weight: bold; line-height: 16px;"
+			},
+			{
+				selector: " .approve_co",
+				style: "display: inline-block; width: 16px; height: 14px; background-image: url(http://img.t.sinajs.cn/t5/style/images/global_nav/bg_line.png?id=1387879752263); margin-left: 2px; vertical-align: text-bottom; background-position: -75px -6px; background-repeat: no-repeat no-repeat;"
+			},
+			{
+				selector: " .WB_text",
+				style: "line-height: 23px; padding: 4px 0px; color: rgb(51, 51, 51); font-family: Arial, Helvetica, sans-serif; background-color: rgb(190, 225, 245);"
+			},
+			{
+				selector: " .WB_text .a_topic",
+				style: "text-decoration: none; color: rgb(10, 140, 210);"
+			},
+			{
+				selector: " .WB_text a:eq(1)",
+				style: "text-decoration: none; color: rgb(10, 140, 210);"
+			},
+			{
+				selector: " .WB_media_list",
+				style: "margin: 0px -20px 0px 0px; padding: 0px 0px 15px;"
+			},
+			{
+				selector: " .WB_media_list li",
+				style: "margin: 0px 9px 0px 0px; padding: 0px; list-style: none; display: inline; vertical-align: top;"
+			},
+			{
+				selector: " .WB_media_list .chePicMin",
+				style: "cursor: url(http://img.t.sinajs.cn/t5/style/images/common/big.cur), auto !important; background-color: rgb(230, 230, 230); display: inline-block; vertical-align: top; min-width: 36px; max-width: 120px; max-height: 120px; text-align: center;"
+			},
+			{
+				selector: ".bigcursor, .bigcursor img",
+				style: "cursor: pointer; max-width: 120px; max-height: 120px; vertical-align: top; display: inline-block;"
+			},
+			{
+				selector: " .WB_func .WB_handle",
+				style: "float: right;"
+			},
+			{
+				selector: " .WB_func a",
+				style: "color: rgb(10, 140, 210);"
+			},
+			{
+				selector: " .WB_func .icon_praised_b",
+				style: "display: inline-block; width: 13px; height: 14px; background-image: url(http://img.t.sinajs.cn/t5/style/images/common/icon.png?id=1392885674388); vertical-align: text-bottom; position: relative; background-position: -75px 0px; background-repeat: no-repeat no-repeat;"
+			},
+			{
+				selector: " .WB_func .S_txt3",
+				style: "color: rgb(174, 174, 174); margin: 0px 6px 0px 8px;"
+			},
+			{
+				selector: " .WB_func .WB_from .WB_time",
+				style: "text-decoration: none; color: rgb(108, 186, 228); margin: 0px 7px 0px 0px;"
+			},
+			{
+				selector: " .WB_func .WB_from .S_txt2",
+				style: "color: rgb(128, 128, 128);"
+			},
+			{
+				selector: " .WB_func .WB_from .S_link2",
+				style: "text-decoration: none; color: rgb(108, 186, 228);"
+			},
+			{
+				selector: "address, caption, cite, code, dfn, em, i, th, var, b ",
+				style:"font-style: normal;font-weight: normal;"
 			}
 		]
 	}
 ]
+allStyle = [
+	{
+		selector: ".wbpick-head-pic",
+		style:"float: left;width: 50px; height: 50px; position: relative;"
+	},
+	{
+		selector: ".wbpick-head-pic img",
+		style:"width: 50px; height:50px;"
+	},
+	{
+		selector: ".wbpick-detail",
+		style:"margin-left: 65px; color: rgb(51, 51, 51); font-family: Arial, Helvetica, sans-serif; font-size: 12px; line-height: 13.5px; font-style:normal; background-color: rgb(190, 225, 245);"
+	}
+]
+
 var nestButton = {
 	inited: false,
 	button:null,
@@ -188,19 +284,32 @@ var inputPanel = {
 		panel.hide().find("span").hide();
 	}
 }
-function WB(configs, bk_url, wb_url, pageHtml) {
+function WB(configs, wb_style, bk_url, wb_url, pageHtml) {
+
 	this.bk_config = null;
 	this.wb_config = null;
+	this.wb_style = null;
+	this.bk_url = bk_url;
+	this.wb_url = wb_url;
 	var bk_configs = configs.bk_configs;
 	for(var i = 0; i < bk_configs.length; i++){
 		if(bk_configs[i].site.test(bk_url)){
 			this.bk_config = bk_configs[i];
+			break;
 		}
 	}
 	var wb_configs = configs.wb_configs;
 	for(var i = 0; i < wb_configs.length; i++){
 		if(wb_configs[i].site.test(wb_url)){
 			this.wb_config = wb_configs[i];
+			break;
+		}
+	}
+
+	for(var i = 0; i < wb_style.length; i++){
+		if(wb_style[i].site.test(wb_url)){
+			this.wb_style = wb_style[i].style;
+			break;
 		}
 	}
 	this.pageHtml = pageHtml;
@@ -224,21 +333,39 @@ WB.prototype.get_wbContent = function(){
 }
 WB.prototype.insert = function(){
 	var content = this.get_wbContent();
-	var configc = this.wb_config.content;
-	var doc = $(configc.iframeSelector)[0].contentWindow.document;
+	var bk_configc = this.bk_config.content;
+	var wb_configc = this.wb_config.content;
+	var wb_style = this.wb_style;
+	var doc = $(bk_configc.iframeSelector)[0].contentWindow.document;
 	var contentHTML =  	"<div class='wbpick_content'>"+
 							"<div class='wbpick-user-info'>"+
-								"<img class='wbpick-head-pic'/>"+
-								"<span class='wbpick-username'>"+
+								"<div class='wbpick-head-pic'/>"+
 							"</div>"+
-							"<div class='wbpick-detail'/>"+
+							"<div class='wbpick-detail'>"+
+								"<div class='wbpick-username'>"+
+							"</div>"+
 						"</div>";
 	var wb_content = $(contentHTML);
-	wb_content.find(".wbpick-head-pic").attr("src", content.find(configc.headPic_selector).attr("src"));
-	wb_content.find(".wbpick-username").text(content.find(configc.username_selector).text());
-	wb_content.find(".wbpick-detail").append(content.find(configc.detail_selector));
+	for(var i = 0; i < wb_style.length; i++){
+		content.find(wb_style[i].selector).each(function(j, it){
+			$(it).attr("style", $(it).attr("style") + ";" + wb_style[i].style);
+		})
+	}
+	wb_content.find(".wbpick-head-pic").append(content.find(wb_configc.headPic_selector));
+	wb_content.find(".wbpick-username").append(content.find(wb_configc.username_selector));
+	wb_content.find(".wbpick-detail").append(content.find(wb_configc.detail_selector));
+	var timeEle = wb_content.find(wb_configc.time);
+	timeEle.text(timeEle.attr("title"));
+	wb_content.find(wb_configc.nbsp).text(" ");
+	wb_content.find(wb_configc.hiddenItems).hide();
+	for(var i = 0; i < allStyle.length; i++){
+		wb_content.find(allStyle[i].selector).each(function(j, it){
+			$(it).attr("style", $(it).attr("style") + ";" + allStyle[i].style);
+		})
+	}
 
-	wb_content.appendTo($( configc.appendPosition, doc));
+	// wb_content.find(".wbpick-detail").bind("click", )
+	wb_content.appendTo($( bk_configc.appendPosition, doc));
 }
 chrome.runtime.onMessage.addListener(
 	function(request, sender, sendResponse) {
@@ -246,7 +373,7 @@ chrome.runtime.onMessage.addListener(
 	    	var wb_url = request.url;
 	    	var bk_url = location.href;
 	    	var pageHtml = request.html;
-	    	var wb = new WB(configs, bk_url, wb_url,  pageHtml);
+	    	var wb = new WB(configs, wb_style, bk_url, wb_url,  pageHtml);
 	    	wb.insert();
 	    	inputPanel.hide();
 	    }
