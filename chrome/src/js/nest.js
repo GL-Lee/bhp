@@ -59,6 +59,8 @@ var configs = {
 				time:".WB_time",
 				nbsp: ".icon_praised_b",
 				hiddenItems:".loading_gif",
+				a:".WB_time, .WB_handle a",
+				homeUrl:".icother a:last,.pf_lin",
 				processContent:"function process(content, html){var a=content;}"
 			}
 		},
@@ -73,6 +75,8 @@ var configs = {
 				time:".WB_time",
 				nbsp: ".icon_praised_b",
 				hiddenItems:".loading_gif",
+				a:".WB_time, .WB_handle a",
+				homeUrl:".logo_img",
 				processContent:"function process(content, html){var a=content;}"
 			}
 		},
@@ -94,7 +98,7 @@ var wb_style = [
 		style:[
 			{
 				selector: ".icon_praised_b",
-				style: "width: 13px;height: 14px; display: inline-block; background-position: -75px 0;vertical-align: text-bottom;background-image: url('http://img.t.sinajs.cn/t5/style/images/common/icon.png?id=1392885674388')"
+				style: "padding-left:13px;width: 0px;height: 14px; display: inline-block; overflow:hidden; background-position: -75px 0;vertical-align: text-bottom;background-image: url('http://img.t.sinajs.cn/t5/style/images/common/icon.png?id=1392885674388')"
 			},
 			{
 				selector: " .WB_info .WB_name",
@@ -106,7 +110,7 @@ var wb_style = [
 			},
 			{
 				selector: " .WB_text",
-				style: "line-height: 23px; padding: 4px 0px; color: rgb(51, 51, 51); font-family: Arial, Helvetica, sans-serif; background-color: rgb(190, 225, 245);"
+				style: "line-height: 23px; padding: 4px 0px; color: rgb(51, 51, 51); font-size: 14px; font-family: Arial, Helvetica, sans-serif;"
 			},
 			{
 				selector: " .WB_text .a_topic",
@@ -133,16 +137,16 @@ var wb_style = [
 				style: "cursor: pointer; max-width: 120px; max-height: 120px; vertical-align: top; display: inline-block;"
 			},
 			{
+				selector: " .WB_func",
+				style: "font: 12px/1.125 Arial,Helvetica,sans-serif;"
+			},
+			{
 				selector: " .WB_func .WB_handle",
 				style: "float: right;"
 			},
 			{
 				selector: " .WB_func a",
 				style: "color: rgb(10, 140, 210);"
-			},
-			{
-				selector: " .WB_func .icon_praised_b",
-				style: "display: inline-block; width: 13px; height: 14px; background-image: url(http://img.t.sinajs.cn/t5/style/images/common/icon.png?id=1392885674388); vertical-align: text-bottom; position: relative; background-position: -75px 0px; background-repeat: no-repeat no-repeat;"
 			},
 			{
 				selector: " .WB_func .S_txt3",
@@ -177,8 +181,12 @@ allStyle = [
 		style:"width: 50px; height:50px;"
 	},
 	{
+		selector: ".wbpick-username",
+		style:"text-decoration: none; color: rgb(10, 140, 210); font: 14px/1.125 Arial,Helvetica,sans-serif; font-weight: bold; line-height: 16px;"
+	},
+	{
 		selector: ".wbpick-detail",
-		style:"margin-left: 65px; color: rgb(51, 51, 51); font-family: Arial, Helvetica, sans-serif; font-size: 12px; line-height: 13.5px; font-style:normal; background-color: rgb(190, 225, 245);"
+		style:"margin-left: 65px; color: rgb(51, 51, 51); font-family: Arial, Helvetica, sans-serif; line-height: 13.5px; font-style:normal;"
 	}
 ]
 
@@ -339,10 +347,14 @@ WB.prototype.insert = function(){
 	var doc = $(bk_configc.iframeSelector)[0].contentWindow.document;
 	var contentHTML =  	"<div class='wbpick_content'>"+
 							"<div class='wbpick-user-info'>"+
-								"<div class='wbpick-head-pic'/>"+
+								"<div class='wbpick-head-pic'>"+
+									"<a/>"+
+								"</div>"+
 							"</div>"+
 							"<div class='wbpick-detail'>"+
-								"<div class='wbpick-username'>"+
+								"<div>"+
+								"<a class='wbpick-username'/>"+
+								"</div>"+
 							"</div>"+
 						"</div>";
 	var wb_content = $(contentHTML);
@@ -351,13 +363,16 @@ WB.prototype.insert = function(){
 			$(it).attr("style", $(it).attr("style") + ";" + wb_style[i].style);
 		})
 	}
-	wb_content.find(".wbpick-head-pic").append(content.find(wb_configc.headPic_selector));
-	wb_content.find(".wbpick-username").append(content.find(wb_configc.username_selector));
+	var wb_homeUrl = content.find(wb_configc.homeUrl).text();
+	wb_content.find(".wbpick-head-pic a").attr("href", wb_homeUrl).append(content.find(wb_configc.headPic_selector));
+	wb_content.find(".wbpick-username").attr("href", wb_homeUrl).append(content.find(wb_configc.username_selector));
 	wb_content.find(".wbpick-detail").append(content.find(wb_configc.detail_selector));
 	var timeEle = wb_content.find(wb_configc.time);
 	timeEle.text(timeEle.attr("title"));
-	wb_content.find(wb_configc.nbsp).text(" ");
-	wb_content.find(wb_configc.hiddenItems).hide();
+	wb_content.find(wb_configc.nbsp).text("x");
+	wb_content.find(wb_configc.hiddenItems).hide();  
+	wb_content.find(wb_configc.a).attr("href", this.wb_url);
+	wb_content.find(wb_configc.ho).attr("href", this.wb_url);
 	for(var i = 0; i < allStyle.length; i++){
 		wb_content.find(allStyle[i].selector).each(function(j, it){
 			$(it).attr("style", $(it).attr("style") + ";" + allStyle[i].style);
