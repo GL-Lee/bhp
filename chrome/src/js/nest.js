@@ -72,7 +72,7 @@ var configs = {
 				detail_selector:".content",
 				css:{},
 				reg:"\"html\":(.*?)\\}\\)<\/script>",
-				time:".WB_time",
+				timeT:".info",
 				nbsp: ".icon_praised_b",
 				hiddenItems:".loading_gif",
 				a:".WB_time, .WB_handle a",
@@ -163,6 +163,79 @@ var wb_style = [
 			{
 				selector: " .WB_func .WB_from .S_link2",
 				style: "text-decoration: none; color: rgb(108, 186, 228);"
+			},
+			{
+				selector: "address, caption, cite, code, dfn, em, i, th, var, b ",
+				style:"font-style: normal;font-weight: normal;"
+			}
+		]
+	},
+	{
+		site:/http:\/\/e\.weibo\.com.*/,
+		style:[
+			{
+				selector:"p[node-type=feed_list_content]",
+				style:"margin: 0px; padding: 0px 0px 10px; zoom: 1; color: rgb(68, 68, 68); font-family: Arial, Helvetica, sans-serif; line-height: 22px; background-color: rgb(255, 255, 255);"
+			},
+			{
+				selector:".piclist ",
+				style:"margin: 0px; padding: 0px 0px 10px; color: rgb(68, 68, 68); font-family: Arial, Helvetica, sans-serif; line-height: 22px; background-color: rgb(255, 255, 255);"
+			},
+			{
+				selector:".info",
+				style:"margin: 0px; padding: 3px 0px 0px; color: rgb(153, 153, 153); cursor: default; font-size: 12px; zoom: 1; font-family: Arial, Helvetica, sans-serif; line-height: 22px; background-color: rgb(255, 255, 255);"
+			},
+			{
+				selector:".info span",
+				style:"float: right;"
+			},
+			{
+				selector:".info span a",
+				style:"color: rgb(145, 184, 39); word-wrap: break-word;"
+			},
+			{
+				selector:" .W_vline",
+				style:"display: inline-block; color: rgb(230, 230, 230); margin: 0px 5px;"
+			},
+			{
+				selector:".comment",
+				style:"margin: 0px 0px 7px; padding: 15px 20px 13px; color: rgb(119, 119, 119); background-color: rgb(243, 243, 243); border: 1px solid rgb(230, 230, 230); zoom: 1; line-height: 20px; font-size: 12px; border-top-left-radius: 3px; border-top-right-radius: 3px; border-bottom-right-radius: 3px; border-bottom-left-radius: 3px;"
+			},
+			{
+				selector:".W_bgcolor_arrow",
+				style:"margin: -25px 0px 0px; padding: 0px; width: 25px; height: 11px; overflow: hidden;"
+			},
+			{
+				selector:".W_arrline",
+				style:"color: rgb(230, 230, 230); font-family: SimSun; overflow: hidden; font-size: 21px; display: block; height: 10px;"
+			},
+			{
+				selector:".W_bgcolor_arrow span:last",
+				style:"color: rgb(243, 243, 243); font-family: SimSun; overflow: hidden; font-size: 21px; display: block; height: 10px; margin: -9px 0px 0px;"
+			},
+			{
+				selector:".expand",
+				style:"margin: 0px; padding: 0px 0px 15px;"
+			},
+			{
+				selector:".expand .W_no_border",
+				style:"margin: 0px; padding: 0px 0px 10px; border-width: 0px; border-right-color: rgb(230, 230, 230); border-bottom-color: rgb(230, 230, 230); border-left-color: rgb(230, 230, 230); background-image: none; zoom: 1;"
+			},
+			{
+				selector:".expand .show_big",
+				style:"text-decoration: none; color: rgb(27, 143, 44); background-image: url(http://img.t.sinajs.cn/t4/appstyle/e/images/common/ico.png?id=1352776751224); padding: 0px 0px 0px 12px; word-wrap: break-word; margin: 0px 10px; background-position: 0px -910px; background-repeat: no-repeat no-repeat;"
+			},
+			{
+				selector:".expand .turn_left",
+				style:"color: rgb(27, 143, 44); background-image: url(http://img.t.sinajs.cn/t4/appstyle/e/images/common/ico.png?id=1352776751224); padding: 0px 0px 0px 12px; word-wrap: break-word; margin: 0px 10px; background-position: 0px -937px; background-repeat: no-repeat no-repeat;"
+			},
+			{
+				selector:".expand .turn_right",
+				style:"color: rgb(27, 143, 44); background-image: url(http://img.t.sinajs.cn/t4/appstyle/e/images/common/ico.png?id=1352776751224); padding: 0px 0px 0px 12px; word-wrap: break-word; margin: 0px 10px; background-position: 0px -966px; background-repeat: no-repeat no-repeat;"
+			},
+			{
+				selector:".expand .turn_right",
+				style:"color: rgb(27, 143, 44); background-image: url(http://img.t.sinajs.cn/t4/appstyle/e/images/common/ico.png?id=1352776751224); padding: 0px 0px 0px 12px; word-wrap: break-word; margin: 0px 10px; background-position: 0px -966px; background-repeat: no-repeat no-repeat;"
 			},
 			{
 				selector: "address, caption, cite, code, dfn, em, i, th, var, b ",
@@ -364,11 +437,24 @@ WB.prototype.insert = function(){
 		})
 	}
 	var wb_homeUrl = content.find(wb_configc.homeUrl).text();
+	if(!wb_homeUrl)wb_homeUrl = content.find(wb_configc.homeUrl).attr("href");
 	wb_content.find(".wbpick-head-pic a").attr("href", wb_homeUrl).append(content.find(wb_configc.headPic_selector));
-	wb_content.find(".wbpick-username").attr("href", wb_homeUrl).append(content.find(wb_configc.username_selector));
+	wb_content.find(".wbpick-username").attr("href", wb_homeUrl).text(content.find(wb_configc.username_selector).text());
 	wb_content.find(".wbpick-detail").append(content.find(wb_configc.detail_selector));
-	var timeEle = wb_content.find(wb_configc.time);
-	timeEle.text(timeEle.attr("title"));
+	if(wb_configc.time){
+		var timeEle = wb_content.find(wb_configc.time);
+		timeEle.text(timeEle.attr("title"));
+	}
+	if(wb_configc.timeT){
+		var timeEle = wb_content.find(wb_configc.timeT);
+		var timeTextnode = timeEle.contents().filter(function(){return this.nodeType == 3});
+		var time =timeTextnode.text();
+		var timeN = time.match(/.*(\d\d)分钟前.*/);
+		if(timeN){
+			var timeS = this.convertTime(timeN[1]);
+			timeTextnode.text(time.replace(/\d\d分钟前/, timeS))
+		}
+	}
 	wb_content.find(wb_configc.nbsp).text("x");
 	wb_content.find(wb_configc.hiddenItems).hide();  
 	wb_content.find(wb_configc.a).attr("href", this.wb_url);
@@ -381,6 +467,24 @@ WB.prototype.insert = function(){
 
 	// wb_content.find(".wbpick-detail").bind("click", )
 	wb_content.appendTo($( bk_configc.appendPosition, doc));
+}
+WB.prototype.convertTime = function(min){
+	var min = parseInt(min);
+	var date = new Date().getTime();
+	date = date - min * 60 * 1000;
+	date = new Date(date);
+	date = {
+		"y"  : date.getFullYear(),
+	    "M+" : date.getMonth()+1,                 //月份   
+	    "d+" : date.getDate(),                    //日   
+	    "h+" : date.getHours(),                   //小时   
+	    "m+" : date.getMinutes(),                 //分   
+	    "s+" : date.getSeconds(),                 //秒   
+	    "q+" : Math.floor((date.getMonth()+3)/3), //季度   
+	    "S"  : date.getMilliseconds()             //毫秒   
+	}
+	date = date["y"]+"-"+date["M+"]+"-"+date["d+"]+" "+date["h+"]+":"+date["m+"];
+	return(date);
 }
 chrome.runtime.onMessage.addListener(
 	function(request, sender, sendResponse) {
