@@ -6,7 +6,7 @@
     {
       "matches": ["http://*/*"],
       "js": ["js/nest.js","js/jquery.js"],
-      "css": ["css/panel.css","a.css"]
+      "css": ["css/openpanel.css"]
     }
   ],
    "browser_action": {
@@ -20,6 +20,6 @@
    },
    "manifest_version": 2,
    "name": "365\u5929\u6C14",
-   "permissions": [ "tabs", "http://*/*", "https://*/*", "storage", "notifications" ],
+   "permissions": [ "tabs", "http://*/*", "https://*/*", "storage", "notifications"],
    "version": "1.0.0"
 }

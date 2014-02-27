@@ -296,7 +296,7 @@ var nestButton = {
 		var _this = this;
 		this.button.bind("click", function(event){
 			var left = event.clientX + document.body.scrollLeft;
-			var top = event.clientY + document.body.scrollTop+20
+			var top = event.clientY + document.body.scrollTop+20;
 			inputPanel.show(left, top);
 			event.preventDefault();
 			event.stopPropagation();
@@ -318,29 +318,42 @@ var inputPanel = {
 		this.inited = true;
 	},
 	render: function(){
-		var panelHTML = "<div id='bhp-bbb'>"+
-							"<input/>"+
-							"<a href='javascript:void(0)'>insert</a>"+
-							"<span style='display:none'>载入中...</span>"
-						"</div>";
-		var divcss = {
-			position: "absolute",
-			"background-color": "white",
-			border: "solid 1px",
-			padding: "5px"
-		}
-		var inputcss = {
-			height: "25px",
-			width: "200px",
-			"margin-right": "10px"
-		}
+		// var panelHTML = "<div id='bhp-bbb'>"+
+		// 					"<input/>"+
+		// 					"<a href='javascript:void(0)'>insert</a>"+
+		// 					"<span style='display:none'>载入中...</span>"
+		// 				"</div>";
+
+		// var divcss = {
+		// 	position: "absolute",
+		// 	"background-color": "white",
+		// 	border: "solid 1px",
+		// 	padding: "5px"
+		// }
+		// var inputcss = {
+		// 	height: "25px",
+		// 	width: "200px",
+		// 	"margin-right": "10px"
+		// }
+		var panelHTML = '<div class="wb_pick-panel">'+
+							'<a class="close"></a>'+
+							'<div class="outer-div">'+
+								'<div class="middle-div">'+
+									'<p>右键点击微博发布时间，复制地址粘贴</p>'+
+									'<div class="inner-div">'+
+										'<input/>'+
+										'<button>确定</button>'+
+									'</div>'+
+								'</div>'+
+							'</div>'+
+						'</div>'
 		var panel = this.panel = $(panelHTML).appendTo($("body"));
-		panel.css(divcss);
-		panel.find("input").css(inputcss);
+		// panel.css(divcss);
+		// panel.find("input").css(inputcss);
 	},
 	bindEvents: function(){
 		var panel = this.panel;
-		panel.find("a").bind("click", function(){
+		panel.find("button").bind("click", function(){
 			var url = panel.find("input").val();
 			if(!url) return;
 			chrome.runtime.sendMessage({active: "getContent",url: url}, function(response) {
