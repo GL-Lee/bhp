@@ -61,7 +61,7 @@ var configs = {
 				reg:"\"html\":(.*?)\\}\\)<\/script>",
 				time:".WB_time",
 				nbsp: ".icon_praised_b,.approve_co,.approve",
-				hiddenItems:".loading_gif,.icother a:last,.pf_lin,.W_level_ico,.pf_icon .CH",
+				hiddenItems:".loading_gif,.icother a:last,.pf_lin,.W_level_ico,.pf_icon .CH,.feed_tag_list_form",
 				a:".WB_time, .WB_handle a",
 				homeUrl:".icother a:last,.pf_lin",
 				onclickA:".WB_from a[onclick]",
@@ -532,22 +532,23 @@ WB.prototype.insert = function(){
 							"</div>"+
 						"</div>";
 	var wb_content = $(contentHTML);
-	var len = wb_style? wb_style.length: 0;
+	var contentDetail = content.find(wb_configc.detail_selector);
+	var len = sina_home_frame? sina_home_frame.length: 0;
 	for(var i = 0; i < len; i++){
-		content.find(wb_style[i].selector).each(function(j, it){
-			$(it).attr("style", $(it).attr("style") + ";" + wb_style[i].style);
+		contentDetail.find(sina_home_frame[i].selector).each(function(j, it){
+			$(it).attr("style", $(it).attr("style") + ";" + sina_home_frame[i].style);
 		})
 	}
 	len = sina_home_A? sina_home_A.length: 0;
 	for(var i = 0; i < len; i++){
-		content.find(sina_home_A[i].selector).each(function(j, it){
+		contentDetail.find(sina_home_A[i].selector).each(function(j, it){
 			$(it).attr("style", $(it).attr("style") + ";" + sina_home_A[i].style);
 		})
 	}
-	len = sina_home_frame? sina_home_frame.length: 0;
+	len = wb_style? wb_style.length: 0;
 	for(var i = 0; i < len; i++){
-		content.find(sina_home_frame[i].selector).each(function(j, it){
-			$(it).attr("style", $(it).attr("style") + ";" + sina_home_frame[i].style);
+		content.find(wb_style[i].selector).each(function(j, it){
+			$(it).attr("style", $(it).attr("style") + ";" + wb_style[i].style);
 		})
 	}
 	var wb_homeUrl = content.find(wb_configc.homeUrl).text();
@@ -615,8 +616,11 @@ chrome.runtime.onMessage.addListener(
 	    	var wb_url = request.url;
 	    	var bk_url = location.href;
 	    	var pageHtml = request.html;
+	    	var d = new Date().getTime();
 	    	var wb = new WB(configs, wb_style, bk_url, wb_url,  pageHtml);
 	    	wb.insert();
+	    	var m = new Date().getTime();
+	    	console.log((m-d)/1000);
 	    	inputPanel.hide();
 	    }
 	}
