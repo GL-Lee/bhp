@@ -5,7 +5,7 @@
    "content_scripts": [
     {
       "matches": ["http://*/*"],
-      "js": ["js/nest.js","js/jquery.js"],
+      "js": ["js/nest.js","js/jquery.js","js/sina_home_A.js","js/sina_home_frame.js"],
       "css": ["css/openpanel.css"]
     }
   ],

@@ -4,6 +4,7 @@
 	width: 463px;
 	background-color: #818588;
 	padding: 8px;
+	z-index: 1024;
 }
 .wb_pick-panel .close{
 	position: absolute;
