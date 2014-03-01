@@ -21,6 +21,36 @@ var configs = {
 			content:{
 				iframeSelector: "#SinaEditor_Iframe iframe",
 				appendPosition: "body",
+			},
+			addListener: function(){
+				var i = 0;
+				var eles = null;
+				var interval =setInterval(function(){
+					eles = $(".fWrap .btn:first");
+					if(i > 10 || eles.length > 0){
+						for(var i = 0; i < eles.length; i++){
+							eles[i].addEventListener("click",function(){
+								var t = $(".wbpick_content", $("#SinaEditor_Iframe iframe")[0].contentWindow.document);
+								t.find("a").each(function(i, it){
+									var $it = $(it);
+									var span = $("<span/>").insertBefore($it);
+									span.append($it).attr("style", $it.attr("style"));
+								})
+								// var te = t.innerHTML;
+								// te = te.replace(/<a /g, "<wb_pick_a_tag ");
+								// te = te.replace(/\/a>/g,"/wb_pick_a_tag>");
+								// t.innerHTML = te;
+								// var textArea = $("#SinaEditorTextarea");
+								// var blog_body = textArea.val();
+								// blog_body = blog_body.replace(/<a /g, "<wb_pick_a_tag ");
+								// blog_body = blog_body.replace(/\/a>/g,"/wb_pick_a_tag>");
+								// textArea.val(blog_body);
+							},true);
+						}
+						clearInterval(interval);
+					}
+				}, 1000)
+				
 			}
 		},
 		{
@@ -33,6 +63,19 @@ var configs = {
 			},
 			content:{
 				iframeSelector: ".zebx iframe",
+				appendPosition: "body"
+			}
+		},
+		{
+			site: /.*blog\.sohu\.com*/,
+			button:{
+				position: "#menuContainer",
+				nestFun: "appendTo",
+				buttonStyle: {
+				}
+			},
+			content:{
+				iframeSelector: ".editor_bg iframe",
 				appendPosition: "body"
 			}
 		},
@@ -61,10 +104,11 @@ var configs = {
 				reg:"\"html\":(.*?)\\}\\)<\/script>",
 				time:".WB_time",
 				nbsp: ".icon_praised_b,.approve_co,.approve",
-				hiddenItems:".loading_gif,.icother a:last,.pf_lin,.W_level_ico,.pf_icon .CH,.feed_tag_list_form",
+				hiddenItems:".loading_gif,.icother a:last,.pf_lin,.W_level_ico,.pf_icon .CH,.feed_tag_list_form,.layer_menu_list",
 				a:".WB_time, .WB_handle a",
 				homeUrl:".icother a:last,.pf_lin",
 				onclickA:".WB_from a[onclick]",
+				host:"http://weibo.com/",
 				processContent:"function process(content, html){var a=content;}"
 			}
 		},
@@ -343,7 +387,7 @@ allStyle = [
 	},
 	{
 		selector: ".wbpick-detail",
-		style:"margin-left: 65px; color: rgb(51, 51, 51); font-family: Arial, Helvetica, sans-serif; line-height: 13.5px; font-style:normal;"
+		style:"margin-left: 65px; color: rgb(51, 51, 51); font: 12px/1.125 Arial,Helvetica,sans-serif;font-style:normal;"
 	},
 	{
 		selector:"i, cite, em, var, dfn, address",
@@ -571,8 +615,14 @@ WB.prototype.insert = function(){
 		}
 	}
 	wb_content.find(wb_configc.nbsp).text("x").css("font-size","0px");
-	wb_content.find(wb_configc.hiddenItems).remove();  
-	wb_content.find(wb_configc.a).attr("href", this.wb_url);
+	wb_content.find(wb_configc.hiddenItems).remove();
+	var _url = "";
+	wb_content.find(wb_configc.a).each(function(i, it){
+		$it = $(it);
+		_url = wb_configc.host + $it.closest(".WB_func").find(".WB_time").attr("href");
+		$it.attr("href", _url);
+	})
+	// wb_content.find(wb_configc.a).attr("href", this.wb_url);
 	wb_content.find(wb_configc.ho).attr("href", this.wb_url);
 	var onclickA = wb_content.find(wb_configc.onclickA);
 	onclickA.each(function(i, it){
@@ -636,4 +686,5 @@ for(var i = 0; i <　bk_configs.length; i++){
 }
 if(bk_config){
 	nestButton.init(bk_config.button);
+	bk_config.addListener && bk_config.addListener();
 }
