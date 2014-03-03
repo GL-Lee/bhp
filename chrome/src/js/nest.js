@@ -11,11 +11,14 @@ var configs = {
 					width: "75px",
 					height: "25px",
 					"line-height": "25px",
-					border: "solid 2px",
+					border: "1px solid #E4DEDE",
 					"margin-top": "5px",
-					"font-weight": "bold",
-					color: "blue",
-					"border-color": "grey",
+					color: "#000100",
+					"border-radius": "1px",
+					"background-color": "#F5F5F5",
+					"margin-left": "4px",
+					"text-align": "center",
+					"text-decoration": "none"
 				}
 			},
 			content:{
@@ -26,15 +29,19 @@ var configs = {
 				var i = 0;
 				var eles = null;
 				var interval =setInterval(function(){
-					eles = $(".fWrap .btn:first");
+					eles = $(".fWrap .btn, #articlePostBtn");
 					if(i > 10 || eles.length > 0){
 						for(var i = 0; i < eles.length; i++){
 							eles[i].addEventListener("click",function(){
 								var t = $(".wbpick_content", $("#SinaEditor_Iframe iframe")[0].contentWindow.document);
 								t.find("a").each(function(i, it){
 									var $it = $(it);
-									var span = $("<span/>").insertBefore($it);
-									span.append($it).attr("style", $it.attr("style"));
+									if(!$it.attr("addspan")){
+										var span = $("<span/>").insertBefore($it);
+
+										span.append($it).attr("style", $it.attr("style"));
+										$it.attr("addspan", true);
+									}
 								})
 								// var te = t.innerHTML;
 								// te = te.replace(/<a /g, "<wb_pick_a_tag ");
@@ -98,17 +105,30 @@ var configs = {
 			site: /http:\/\/weibo\.com.*/,
 			content:{
 				headPic_selector: ".pf_head_pic img",
-				username_selector: "#place, .pf_name",
+				username_selector: "#place strong, .pf_name .name",
 				detail_selector:".WB_detail div:first",
 				css:{},
 				reg:"\"html\":(.*?)\\}\\)<\/script>",
 				time:".WB_time",
 				nbsp: ".icon_praised_b,.approve_co,.approve",
+				emspan:".ico_playvideo",
 				hiddenItems:".loading_gif,.icother a:last,.pf_lin,.W_level_ico,.pf_icon .CH,.feed_tag_list_form,.layer_menu_list",
 				a:".WB_time, .WB_handle a",
 				homeUrl:".icother a:last,.pf_lin",
 				onclickA:".WB_from a[onclick]",
 				host:"http://weibo.com/",
+				spec:[
+					{
+						src:".WB_feed_spec .WB_feed_spec_pic a",
+						closest:".WB_feed_spec",
+						to:".WB_feed_spec_info .W_btn_a"
+					},
+					{
+						src:".WB_media_expand .WB_time",
+						closest:".WB_media_expand ",
+						to:".W_btn_c"
+					}
+				],
 				processContent:"function process(content, html){var a=content;}"
 			}
 		},
@@ -146,106 +166,14 @@ var wb_style = [
 	{
 		site:/http:\/\/weibo\.com.*/,
 		style:[
-			{
-				selector: ".icon_praised_b",
-				style: "padding-left:13px;width: 0px;height: 14px; display: inline-block; overflow:hidden; background-position: -75px 0;vertical-align: text-bottom;background-image: url('http://img.t.sinajs.cn/t5/style/images/common/icon.png?id=1392885674388')"
-			},
-			{
-				selector: " .WB_info .WB_name",
-				style: "text-decoration: none; color: rgb(51, 51, 51); font-size: 14px; font-weight: bold; line-height: 16px;"
-			},
-			{
-				selector: " .approve_co",
-				style: "display: inline-block; width: 16px; height: 14px; background-image: url(http://img.t.sinajs.cn/t5/style/images/global_nav/bg_line.png?id=1387879752263); margin-left: 2px; vertical-align: text-bottom; background-position: -75px -6px; background-repeat: no-repeat no-repeat;"
-			},
-			{
-				selector: " .WB_text",
-				style: "line-height: 23px; padding: 4px 0px; color: rgb(51, 51, 51); font-size: 14px; font-family: Arial, Helvetica, sans-serif;"
-			},
-			{
-				selector: " .WB_text .a_topic",
-				style: "text-decoration: none; color: rgb(10, 140, 210);"
-			},
-			{
-				selector: " .WB_text a:eq(1)",
-				style: "text-decoration: none; color: rgb(10, 140, 210);"
-			},
-			{
-				selector: " .WB_media_list",
-				style: "margin: 0px -20px 0px 0px; padding: 0px 0px 15px;"
-			},
-			{
-				selector: " .WB_media_list li",
-				style: "margin: 0px 9px 0px 0px; padding: 0px; list-style: none; display: inline; vertical-align: top;"
-			},
-			{
-				selector: " .WB_media_list .chePicMin",
-				style: "cursor: url(http://img.t.sinajs.cn/t5/style/images/common/big.cur), auto !important; background-color: rgb(230, 230, 230); display: inline-block; vertical-align: top; min-width: 36px; max-width: 120px; max-height: 120px; text-align: center;"
-			},
-			{
-				selector: ".bigcursor, .bigcursor img",
-				style: "cursor: pointer; max-width: 120px; max-height: 120px; vertical-align: top; display: inline-block;"
-			},
-			{
-				selector: "address, caption, cite, code, dfn, em, i, th, var, b ",
-				style:"font-style: normal;font-weight: normal;"
-			},
-			{
-				selector:".approve",
-				style:"background-position: -50px -6px;width: 16px;height: 14px;display:block; margin-left: 2px;vertical-align: text-bottom;background-image: url('http://img.t.sinajs.cn/t5/style/images/global_nav/bg_line.png?id=1387879752263');"
-			},
-			{
-				selector:".ico_member1",
-				style:"background-position: -300px -325px;vertical-align: text-bottom;margin-left: 2px;width: 16px;height: 14px;display:block;background-image:url('http://img.t.sinajs.cn/t5/style/images/common/icon.png?id=1392885674388');"
-			},
-			{
-				selector:".ico_member2",
-				style:"background-position: -300px -350px;vertical-align: text-bottom;margin-left: 2px;width: 16px;height: 14px;display:block;background-image:url('http://img.t.sinajs.cn/t5/style/images/common/icon.png?id=1392885674388');"
-			},
-			{
-				selector:".ico_member3",
-				style:"background-position: -300px -375px;vertical-align: text-bottom;margin-left: 2px;width: 16px;height: 14px;display:block;background-image:url('http://img.t.sinajs.cn/t5/style/images/common/icon.png?id=1392885674388');"
-			},
-			{
-				selector:".ico_member4",
-				style:"background-position: -300px -400px;vertical-align: text-bottom;margin-left: 2px;width: 16px;height: 14px;display:block;background-image:url('http://img.t.sinajs.cn/t5/style/images/common/icon.png?id=1392885674388');"
-			},
-			{
-				selector:".ico_member5",
-				style:"background-position: -300px -425px;vertical-align: text-bottom;margin-left: 2px;width: 16px;height: 14px;display:block;background-image:url('http://img.t.sinajs.cn/t5/style/images/common/icon.png?id=1392885674388');"
-			},
-			{
-				selector:".ico_member6",
-				style:"background-position: -300px -450px;vertical-align: text-bottom;margin-left: 2px;width: 16px;height: 14px;display:block;background-image:url('http://img.t.sinajs.cn/t5/style/images/common/icon.png?id=1392885674388');"
-			},
-			{
-				selector:".pf_icon",
-				style:"float: left;display: inline;line-height: 14px;padding-top: 2px;"
-			},
-			{
-				selector:".pf_name ",
-				style:"overflow:hidden;"
-			},
-			{
-				selector:".pf_name .name",
-				style:"margin-right: 3px;float: left;line-height:16px;color: rgb(10, 140, 210);font-weight: bold;height:16px;"
-			},
-			{
-				selector:".pf_icon .icon_bed",
-				style:"float: left;display: inline;"
-			},
-			{
-				selector:"#place",
-				style:"color: rgb(10, 140, 210);font: 14px/1.125 Arial,Helvetica,sans-serif;font-weight: bold;line-height: 16px;margin: 0px;"
-			},
-			{
-				selector:".lotspic_list",
-				style:"float: left;width: 255px;margin-left: -5px;font-size: 0;"
-			},
-			{
-				selector:".lotspic_list li, .lotspic_video li",
-				style:"float: left;display: inline;width: 80px;height: 80px;margin: 5px 0 0 5px;overflow: hidden;position: relative;vertical-align: top;list-style: none;"
-			}
+			// {
+			// 	selector:".WB_arrow em",
+			// 	style:"margin-top:-18px;position:relative;"
+			// },
+			// {
+			// 	selector:".WB_arrow em",
+			// 	style:"margin-top:-17px;position:relative;"
+			// }
 		]
 	},
 	{
@@ -372,27 +300,19 @@ var wb_style = [
 		]
 	}
 ]
-allStyle = [
-	{
-		selector: ".wbpick-head-pic",
-		style:"float: left;width: 50px; height: 50px; position: relative;"
-	},
-	{
-		selector: ".wbpick-head-pic img",
-		style:"width: 50px; height:50px;"
-	},
-	{
-		selector: ".wbpick-username",
-		style:"text-decoration: none; color: rgb(10, 140, 210); font: 14px/1.125 Arial,Helvetica,sans-serif; font-weight: bold; line-height: 16px;"
-	},
-	{
-		selector: ".wbpick-detail",
-		style:"margin-left: 65px; color: rgb(51, 51, 51); font: 12px/1.125 Arial,Helvetica,sans-serif;font-style:normal;"
-	},
-	{
-		selector:"i, cite, em, var, dfn, address",
-		style:"font-style: normal;"
-	}
+allStyle = [ 
+			{
+				selector:".WB_detail",
+				style:"font: 12px/1.125 Arial,Helvetica,sans-serif;"
+			},
+			{
+				selector:".WB_arrow",
+				style:"margin-top:-18px !important;"
+			},
+			{
+				selector:"span, em",
+				style:"line-height:140%;"
+			}
 ]
 
 var nestButton = {
@@ -450,23 +370,6 @@ var inputPanel = {
 		this.inited = true;
 	},
 	render: function(){
-		// var panelHTML = "<div id='bhp-bbb'>"+
-		// 					"<input/>"+
-		// 					"<a href='javascript:void(0)'>insert</a>"+
-		// 					"<span style='display:none'>载入中...</span>"
-		// 				"</div>";
-
-		// var divcss = {
-		// 	position: "absolute",
-		// 	"background-color": "white",
-		// 	border: "solid 1px",
-		// 	padding: "5px"
-		// }
-		// var inputcss = {
-		// 	height: "25px",
-		// 	width: "200px",
-		// 	"margin-right": "10px"
-		// }
 		var panelHTML = '<div class="wb_pick-panel">'+
 							'<a class="close"></a>'+
 							'<div class="outer-div">'+
@@ -478,6 +381,7 @@ var inputPanel = {
 									'</div>'+
 								'</div>'+
 							'</div>'+
+							'<div class="tip-cover">正在载入微博...</div>'+
 						'</div>'
 		var panel = this.panel = $(panelHTML).appendTo($("body"));
 		// panel.css(divcss);
@@ -491,7 +395,7 @@ var inputPanel = {
 			chrome.runtime.sendMessage({active: "getContent",url: url}, function(response) {
 			 	console.log(response.farewell);
 			});
-			panel.find("span").show();
+			panel.addClass("wb_pick-panel-loading");
 			event.preventDefault();
 			event.stopPropagation();
 		})
@@ -507,7 +411,7 @@ var inputPanel = {
 	},
 	hide: function(){
 		var panel = this.panel;
-		panel.hide().find("span").hide();
+		panel.hide().hide().removeClass("wb_pick-panel-loading").find("input").val("");
 	}
 }
 function WB(configs, wb_style, bk_url, wb_url, pageHtml) {
@@ -538,7 +442,8 @@ function WB(configs, wb_style, bk_url, wb_url, pageHtml) {
 			break;
 		}
 	}
-	this.pageHtml = pageHtml;
+
+	this.pageHtml = pageHtml.replace(/\\n/g,"").replace(/>\s*/g,">").replace(/\s*?</g,"<");
 }
 WB.prototype.get_wbContent = function(){
 	var html = this.pageHtml;
@@ -563,43 +468,28 @@ WB.prototype.insert = function(){
 	var wb_configc = this.wb_config.content;
 	var wb_style = this.wb_style;
 	var doc = $(bk_configc.iframeSelector)[0].contentWindow.document;
-	var contentHTML =  	"<div class='wbpick_content'>"+
-							"<div class='wbpick-user-info'>"+
-								"<div class='wbpick-head-pic'>"+
-									"<a/>"+
-								"</div>"+
+	var contentHTML =  	"<div class='wbpick_content WB_feed_datail'>"+
+							'<div class="WB_face">'+
+                				'<a class="W_face_radius">'+
+                					'<img width="50" height="50"/>'+
+                				'</a>'+
 							"</div>"+
-							"<div class='wbpick-detail'>"+
-								"<div>"+
-								"<a class='wbpick-username'/>"+
-								"</div>"+
+							"<div class='WB_detail'>"+
+								'<div class="WB_info">'+
+									'<a class="WB_name S_func1">'+
+									'</a>'+
+									'<a target="_blank" href="http://verified.weibo.com/verify">'+
+										'<i title="新浪机构认证" class="W_ico16 approve_co"></i>'+
+									'</a>'+
+				                '</div>'+
 							"</div>"+
 						"</div>";
 	var wb_content = $(contentHTML);
-	var contentDetail = content.find(wb_configc.detail_selector);
-	var len = sina_home_frame? sina_home_frame.length: 0;
-	for(var i = 0; i < len; i++){
-		contentDetail.find(sina_home_frame[i].selector).each(function(j, it){
-			$(it).attr("style", $(it).attr("style") + ";" + sina_home_frame[i].style);
-		})
-	}
-	len = sina_home_A? sina_home_A.length: 0;
-	for(var i = 0; i < len; i++){
-		contentDetail.find(sina_home_A[i].selector).each(function(j, it){
-			$(it).attr("style", $(it).attr("style") + ";" + sina_home_A[i].style);
-		})
-	}
-	len = wb_style? wb_style.length: 0;
-	for(var i = 0; i < len; i++){
-		content.find(wb_style[i].selector).each(function(j, it){
-			$(it).attr("style", $(it).attr("style") + ";" + wb_style[i].style);
-		})
-	}
 	var wb_homeUrl = content.find(wb_configc.homeUrl).text();
 	if(!wb_homeUrl)wb_homeUrl = content.find(wb_configc.homeUrl).attr("href");
-	wb_content.find(".wbpick-head-pic a").attr("href", wb_homeUrl).append(content.find(wb_configc.headPic_selector));
-	wb_content.find(".wbpick-username").attr("href", wb_homeUrl).append(content.find(wb_configc.username_selector));
-	wb_content.find(".wbpick-detail").append(content.find(wb_configc.detail_selector));
+	wb_content.find(".WB_face img").attr("href", wb_homeUrl).attr("src",content.find(wb_configc.headPic_selector).attr("src"));
+	wb_content.find(".WB_name").attr("href", wb_homeUrl).text(content.find(wb_configc.username_selector).text());
+	wb_content.find(".WB_detail").append(content.find(wb_configc.detail_selector));
 	if(wb_configc.time){
 		var timeEle = wb_content.find(wb_configc.time);
 		timeEle.text(timeEle.attr("title"));
@@ -615,6 +505,10 @@ WB.prototype.insert = function(){
 		}
 	}
 	wb_content.find(wb_configc.nbsp).text("x").css("font-size","0px");
+	// wb_content.find(wb_configc.emspan).each(function(i, it){
+	// 	var $it = $(it);
+	// 	var em = $("<em>x</em>").appendTo($it).css("font-size", "0px");
+	// })
 	wb_content.find(wb_configc.hiddenItems).remove();
 	var _url = "";
 	wb_content.find(wb_configc.a).each(function(i, it){
@@ -623,7 +517,19 @@ WB.prototype.insert = function(){
 		$it.attr("href", _url);
 	})
 	// wb_content.find(wb_configc.a).attr("href", this.wb_url);
-	wb_content.find(wb_configc.ho).attr("href", this.wb_url);
+	// wb_content.find(wb_configc.ho).attr("href", this.wb_url);
+	if(wb_configc.spec){
+		var spec = wb_configc.spec;
+		for(var i = 0; i < spec.length; i ++){
+			var closest = spec[i].closest;
+			wb_content.find(spec[i].src).each(function(j, it){
+				$it = $(it);
+				var c = $it.closest(closest);
+				var url = $it.attr("href");
+				c.find(spec[i].to).attr("href", url);
+			})
+		}
+	}	
 	var onclickA = wb_content.find(wb_configc.onclickA);
 	onclickA.each(function(i, it){
 		var $it = $(it);
@@ -632,15 +538,38 @@ WB.prototype.insert = function(){
 			$it.attr("href", clickHref[1]).attr("target", "_blank").removeAttr("onclick");
 		}
 	})
+	var len = sina_skin? sina_skin.length: 0;
+	for(var i = 0; i < len; i++){
+		wb_content.find(sina_skin[i].selector).each(function(j, it){
+			$(it).attr("style", $(it).attr("style") + ";" + sina_skin[i].style);
+		})
+	}
+	len = sina_home_frame? sina_home_frame.length: 0;
+	for(var i = 0; i < len; i++){
+		wb_content.find(sina_home_frame[i].selector).each(function(j, it){
+			$(it).attr("style", $(it).attr("style") + ";" + sina_home_frame[i].style);
+		})
+	}
+	len = sina_home_A? sina_home_A.length: 0;
+	for(var i = 0; i < len; i++){
+		wb_content.find(sina_home_A[i].selector).each(function(j, it){
+			$(it).attr("style", $(it).attr("style") + ";" + sina_home_A[i].style);
+		})
+	}
+	len = wb_style? wb_style.length: 0;
+	for(var i = 0; i < len; i++){
+		wb_content.find(wb_style[i].selector).each(function(j, it){
+			$(it).attr("style", $(it).attr("style") + ";" + wb_style[i].style);
+		})
+	}
 	
 	for(var i = 0; i < allStyle.length; i++){
 		wb_content.find(allStyle[i].selector).each(function(j, it){
 			$(it).attr("style", $(it).attr("style") + ";" + allStyle[i].style);
 		})
 	}
-
 	// wb_content.find(".wbpick-detail").bind("click", )
-	wb_content.appendTo($( bk_configc.appendPosition, doc));
+	wb_content.appendTo($( bk_configc.appendPosition, doc)).attr("style","padding: 10px 10px;	border: solid 1px rgb(230, 225, 225);	border-radius: 3px;");
 }
 WB.prototype.convertTime = function(min){
 	var min = parseInt(min);
@@ -688,3 +617,202 @@ if(bk_config){
 	nestButton.init(bk_config.button);
 	bk_config.addListener && bk_config.addListener();
 }
+function printStyles(elem,exp,exa) {
+        var allStyle;
+           allStyle = document.defaultView.getComputedStyle(elem,null);
+        var s = "";
+        var t = "";
+        for(var i in allStyle){
+        	if(isNaN(i) && allStyle[i] && allStyle[i]!= "auto" && typeof(allStyle[i]) == "string" && (i.indexOf("webkit") < 0)){
+        		var flg = false;
+        		for(var j = 0; j < exp.length; j++){
+        			if(i.indexOf(exp[j]) == 0){
+        				flg = true;
+        				break;
+        			}
+        		}
+        		if(!flg){
+	        		for(var j = 0; j < exa.length; j++){
+	        			if(i == exa[j] ){
+	        				flg = true;
+	        				break;
+	        			}
+	        		}
+        		}
+        		if(flg){
+	         		t = i + ":" + allStyle[i]+";";
+	        		s += t;
+        		}
+        	}
+        		// 
+        }
+        $(elem).attr("style",s);
+        var s = $(elem).attr("style");
+        s = s.replace(/-webkit.*?;/g,"");
+		// for(var j = 0; j < ex.length; j++){
+		// 	s = s.replace(ex[j],"");
+		// }
+        $(elem).attr("style",s);
+        for(var i =0; i < elem.children.length; i++){
+        	printStyles(elem.children[i], exp,exa);
+        }
+    }
+function css(a) {
+    var sheets = document.styleSheets, o = {};
+    for (var i in sheets) {
+        var rules = sheets[i].rules || sheets[i].cssRules;
+        for (var r in rules) {
+            if (a.is(rules[r].selectorText)) {
+                o = $.extend(o, css2json(rules[r].style), css2json(a.attr('style')));
+            }
+        }
+    }
+    return o;
+}
+
+function css2json(css) {
+    var s = {};
+    if (!css) return s;
+    if (css instanceof CSSStyleDeclaration) {
+        for (var i in css) {
+            if ((css[i]).toLowerCase) {
+                s[(css[i]).toLowerCase()] = (css[css[i]]);
+            }
+        }
+    } else if (typeof css == "string") {
+        css = css.split("; ");
+        for (var i in css) {
+            var l = css[i].split(": ");
+            s[l[0].toLowerCase()] = (l[1]);
+        }
+    }
+    return s;
+}
+window.addEventListener("click", function(event){
+	    	var d = new Date().getTime();
+	    	var p = $(event.target).parents(".WB_feed_datail");
+	    	var ex = [
+				/; [^ ]*?(top|left|right|bottom): (0px|auto)/g,
+				/; [^ ]*?opacity: 1/g,
+				/; [^ ]*?: auto/g,
+				/background-position: 0% 0%;/g,
+				/; [^ ]*?: 0px/g,
+				/position:static;/g,
+				/resize:none;/g,
+				/textAlign:start;/g,
+				/textAnchor:start;/g,
+				/text-align: start;/g,
+	    		/writingMode.*?;/g,
+	    		/wordSpacing.*?;/g,
+	    		/wordBreak.*?;/g,
+	    		/vectorEffect.*?;/g,
+	    		/unicodeBidi.*?;/g,
+	    		/transitionTimingFunction.*?;/g,
+	    		/transitionProperty.*?;/g,
+	    		/transitionDuration.*?;/g,
+	    		/transitionDelay.*?;/g,
+	    		/touchActionDelay.*?;/g,
+	    		/textTransform.*?;/g,
+	    		/tabSize.*?;/g,
+	    		/stroke.*?;/g,
+	    		/stop.*?;/g,
+	    		/speak.*?;/g,
+	    		/paddingTop.*?;/g,
+	    		/paddingRight.*?;/g,
+	    		/paddingLeft.*?;/g,
+	    		/paddingBottom.*?;/g,
+	    		/overflowWrap.*?;/g,
+	    		/objectPosition.*?;/g,
+	    		/objectFit.*?;/g,
+	    		/mask.*?;/g,
+	    		/marker.*?;/g,
+	    		/marginTop.*?;/g,
+	    		/marginRight.*?;/g,
+	    		/marginLeft.*?;/g,
+	    		/marginBottom.*?;/g,
+	    		/listStyle.*?;/g,
+	    		/lineHeight.*?;/g,
+	    		/lightingColor.*?;/g,
+	    		/justifyContent.*?;/g,
+	    		/glyphOrientationHorizontal.*?;/g,
+	    		/fontWeight.*?;/g,
+	    		/fontVariant.*?;/g,
+	    		/fontFamily.*?;/g,
+	    		/floodOpacity.*?;/g,
+	    		/floodColor.*?;/g,
+	    		/flex.*?;/g,
+	    		/colorInterpolationFilters.*?;/g,
+	    		/colorInterpolation.*?;/g,
+	    		/clipRule.*?;/g,
+	    		/clipPath.*?;/g,
+	    		/captionSide.*?;/g,
+	    		/boxSizing.*?;/g,
+	    		/boxShadow.*?;/g,
+	    		/borderWidth.*?;/g,
+	    		/borderT.*?;/g,
+	    		/borderSpacing.*?;/g,
+	    		/borderR.*?;/g,
+	    		/borderL.*?;/g,
+	    		/borderI.*?;/g,
+	    		/borderC.*?;/g,
+	    		/borderB.*?;/g,
+	    		/backgroundP.*?;/g,
+	    		/baselineShift.*?;/g,
+	    		/backgroundRepeat.*?;/g,
+	    		/backgroundOrigin.*?;/g,
+	    		/backgroundImage.*?;/g,
+	    		/backgroundC.*?;/g,
+	    		/backgroundAttachment.*?;/g,
+	    		/alignSelf.*?;/g,
+	    		/alignItems.*?;/g,
+	    		/alignContent.*?;/g,
+	    		/touch-action-delay.*?;/g,
+	    		/background-clip.*?;/g,
+	    		/verticalAlign.*?;/g,
+	    		/border-image-slice.*?;/g,
+	    		/border-image-repeat: stretch;/g,
+	    		/color-interpolation[^;]*;/g
+	    	]
+
+	    	var exp = [
+	    	"background-",
+			"border-",
+			"box-",
+			"font-",
+			"line-",
+			"list-",
+			"max-",
+			"outline-",
+			"overflow",
+			"overflow-",
+			"padding-",
+			"text-",
+			"vertical-",
+			"word-",
+			"align-"
+			];
+			var exa = [
+			"clear",
+			"border",
+			"color",
+			"display",
+			"float",
+			"font",
+			"height",
+			"margin",
+			"opacity",
+			"outline",
+			"position",
+			"background",
+			"white-space",
+			"visibility",
+			"width"
+			]
+	    	if(p.length > 0){
+// var style = css(p);
+// p.css(style);
+	    		printStyles(p[0],exp, exa);
+	    	}
+	    	var m = new Date().getTime();
+	    	console.log((m-d)/1000);
+})
