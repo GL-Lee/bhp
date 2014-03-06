@@ -114,7 +114,7 @@ var configs = {
 				time:".WB_time",
 				nbsp: ".icon_praised_b,.WB_info .W_ico16",
 				emspan:".ico_playvideo",
-				hiddenItems:".loading_gif,.icother a:last,.pf_lin,.W_level_ico,.CH,.feed_tag_list_form,.layer_menu_list",
+				hiddenItems:".loading_gif,.icother a:last,.pf_lin, .icother a:last,.W_level_ico,.CH,.feed_tag_list_form,.layer_menu_list",
 				a:".WB_time, .WB_handle a",
 				homeUrl:".icother a:last,.pf_lin",
 				onclickA:".WB_from a[onclick]",
@@ -604,12 +604,12 @@ WB.prototype.insert = function(){
 				$(this).css("background-color", "");
 			})
 		},100)
-		var closebtn = $("<image title='删除' class='close-button' style='position:absolute; right:0px;top:0px;display:none;width:18px;height:18px;border:solid 1px gray;cursor:pointer;z-index:1024;'></>");
-		closebtn.attr("src", "data:image/gif;base64,R0lGODlhEgASAPIGAHd3d4iIiKqqqru7u93d3e7u7v///wAAACH5BAAAAAAALAAAAAASABIAAANKaLrc/pCNJ+Cs0uCs9uzcUn1KsWnNWQQO+6xQUDRw5Brz/ZCLafUzkeNTKMpKvsVgViSwZMUCAcAQNG8BgpSacjayXMdpEY6YDQkAOw==")
+		var closebtn = $("<a title='删除' onclick='javascript:void(0)' class='close-button' style='position:absolute; right:0px;top:0px;display:none;width:18px;height:18px;border:solid 1px gray;cursor:pointer;z-index:1024;'></a>");
+		closebtn.attr("background-image", "url(\"data:image/gif;base64,R0lGODlhEgASAPIGAHd3d4iIiKqqqru7u93d3e7u7v///wAAACH5BAAAAAAALAAAAAASABIAAANKaLrc/pCNJ+Cs0uCs9uzcUn1KsWnNWQQO+6xQUDRw5Brz/ZCLafUzkeNTKMpKvsVgViSwZMUCAcAQNG8BgpSacjayXMdpEY6YDQkAOw==\")")
 		closebtn.appendTo(contentDetail).bind("click", function(){
 			wb_content.remove();
 		})
-		closebtn.hover(function(){
+		closebtn.hover(function(event){
 			$(this).css("border-color", "black")
 		}, function(){
 			$(this).css("border-color", "gray")
