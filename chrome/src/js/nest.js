@@ -469,6 +469,11 @@ WB.prototype.insert = function(){
 		var bk_configc = this.bk_config.content;
 		var wb_configc = this.wb_config.content;
 		var wb_style = this.wb_style;
+
+		var wb_homeUrl = content.find(wb_configc.homeUrl).text();
+		if(!wb_homeUrl)wb_homeUrl = content.find(wb_configc.homeUrl).attr("href");
+		content.find(wb_configc.hiddenItems).remove();
+		
 		var contentHTML =  	"<div class='wbpick_content'>"+
 							"<div class='WB_feed_datail'>"+
 								'<div class="WB_face">'+
@@ -485,9 +490,8 @@ WB.prototype.insert = function(){
 							"</div>"+
 							"</div>";
 		wb_content = $(contentHTML);
-		var wb_homeUrl = content.find(wb_configc.homeUrl).text();
-		if(!wb_homeUrl)wb_homeUrl = content.find(wb_configc.homeUrl).attr("href");
-		wb_content.find(".WB_face img").attr("href", wb_homeUrl).attr("src",content.find(wb_configc.headPic_selector).attr("src"));
+		wb_content.find(".W_face_radius").attr("href", wb_homeUrl);
+		wb_content.find(".WB_face img").attr("src",content.find(wb_configc.headPic_selector).attr("src"));
 		wb_content.find(".WB_name").attr("href", wb_homeUrl).text(content.find(wb_configc.username_selector).text());
 		wb_content.find(".WB_detail").append(content.find(wb_configc.detail_selector));
 		wb_content.find(".WB_info").append(content.find(".pf_icon a, .icother a"))//暂时用以新浪微薄,以后需要放到设置里面
@@ -510,7 +514,6 @@ WB.prototype.insert = function(){
 		// 	var $it = $(it);
 		// 	var em = $("<em>x</em>").appendTo($it).css("font-size", "0px");
 		// })
-		wb_content.find(wb_configc.hiddenItems).remove();
 		var _url = "";
 		wb_content.find(wb_configc.a).each(function(i, it){
 			$it = $(it);
@@ -605,7 +608,7 @@ WB.prototype.insert = function(){
 			})
 		},100)
 		var closebtn = $("<a title='删除' onclick='javascript:void(0)' class='close-button' style='position:absolute; right:0px;top:0px;display:none;width:18px;height:18px;border:solid 1px gray;cursor:pointer;z-index:1024;'></a>");
-		closebtn.attr("background-image", "url(\"data:image/gif;base64,R0lGODlhEgASAPIGAHd3d4iIiKqqqru7u93d3e7u7v///wAAACH5BAAAAAAALAAAAAASABIAAANKaLrc/pCNJ+Cs0uCs9uzcUn1KsWnNWQQO+6xQUDRw5Brz/ZCLafUzkeNTKMpKvsVgViSwZMUCAcAQNG8BgpSacjayXMdpEY6YDQkAOw==\")")
+		closebtn.css("background-image", "url(data:image/gif;base64,R0lGODlhEgASAPIGAHd3d4iIiKqqqru7u93d3e7u7v///wAAACH5BAAAAAAALAAAAAASABIAAANKaLrc/pCNJ+Cs0uCs9uzcUn1KsWnNWQQO+6xQUDRw5Brz/ZCLafUzkeNTKMpKvsVgViSwZMUCAcAQNG8BgpSacjayXMdpEY6YDQkAOw==)")
 		closebtn.appendTo(contentDetail).bind("click", function(){
 			wb_content.remove();
 		})
