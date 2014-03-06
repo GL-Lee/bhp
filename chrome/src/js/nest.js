@@ -33,7 +33,8 @@ var configs = {
 					if(i > 10 || eles.length > 0){
 						for(var i = 0; i < eles.length; i++){
 							eles[i].addEventListener("click",function(){
-								var t = $(".wbpick_content", $("#SinaEditor_Iframe iframe")[0].contentWindow.document);
+								var doc = $("#SinaEditor_Iframe iframe")[0].contentWindow.document;
+								var t = $(".wbpick_content", doc);
 								t.find("a").each(function(i, it){
 									var $it = $(it);
 									if(!$it.attr("addspan")){
@@ -43,6 +44,7 @@ var configs = {
 										$it.attr("addspan", true);
 									}
 								})
+								$(".hh, .close-button", doc).remove();
 								// var te = t.innerHTML;
 								// te = te.replace(/<a /g, "<wb_pick_a_tag ");
 								// te = te.replace(/\/a>/g,"/wb_pick_a_tag>");
@@ -110,9 +112,9 @@ var configs = {
 				css:{},
 				reg:"\"html\":(.*?)\\}\\)<\/script>",
 				time:".WB_time",
-				nbsp: ".icon_praised_b,.approve_co,.approve",
+				nbsp: ".icon_praised_b,.WB_info .W_ico16",
 				emspan:".ico_playvideo",
-				hiddenItems:".loading_gif,.icother a:last,.pf_lin,.W_level_ico,.pf_icon .CH,.feed_tag_list_form,.layer_menu_list",
+				hiddenItems:".loading_gif,.icother a:last,.pf_lin,.W_level_ico,.CH,.feed_tag_list_form,.layer_menu_list",
 				a:".WB_time, .WB_handle a",
 				homeUrl:".icother a:last,.pf_lin",
 				onclickA:".WB_from a[onclick]",
@@ -312,6 +314,10 @@ allStyle = [
 			{
 				selector:"span, em",
 				style:"line-height:140%;"
+			},
+			{
+				selector:".WB_feed_datail",
+				style:"width:570px;padding: 10px 10px;	border: solid 1px rgb(230, 225, 225);	border-radius: 3px;position:relative;"
 			}
 ]
 
@@ -463,7 +469,8 @@ WB.prototype.insert = function(){
 		var bk_configc = this.bk_config.content;
 		var wb_configc = this.wb_config.content;
 		var wb_style = this.wb_style;
-		var contentHTML =  	"<div class='wbpick_content WB_feed_datail'>"+
+		var contentHTML =  	"<div class='wbpick_content'>"+
+							"<div class='WB_feed_datail'>"+
 								'<div class="WB_face">'+
 	                				'<a class="W_face_radius">'+
 	                					'<img width="50" height="50"/>'+
@@ -473,11 +480,9 @@ WB.prototype.insert = function(){
 									'<div class="WB_info">'+
 										'<a class="WB_name S_func1">'+
 										'</a>'+
-										'<a target="_blank" href="http://verified.weibo.com/verify">'+
-											'<i title="新浪机构认证" class="W_ico16 approve_co"></i>'+
-										'</a>'+
 					                '</div>'+
 								"</div>"+
+							"</div>"+
 							"</div>";
 		wb_content = $(contentHTML);
 		var wb_homeUrl = content.find(wb_configc.homeUrl).text();
@@ -485,6 +490,7 @@ WB.prototype.insert = function(){
 		wb_content.find(".WB_face img").attr("href", wb_homeUrl).attr("src",content.find(wb_configc.headPic_selector).attr("src"));
 		wb_content.find(".WB_name").attr("href", wb_homeUrl).text(content.find(wb_configc.username_selector).text());
 		wb_content.find(".WB_detail").append(content.find(wb_configc.detail_selector));
+		wb_content.find(".WB_info").append(content.find(".pf_icon a, .icother a"))//暂时用以新浪微薄,以后需要放到设置里面
 		if(wb_configc.time){
 			var timeEle = wb_content.find(wb_configc.time);
 			timeEle.text(timeEle.attr("title"));
@@ -565,28 +571,20 @@ WB.prototype.insert = function(){
 		}
 		// wb_content.find(".wbpick-detail").bind("click", )
 	}
-		wb_content.appendTo($( bk_configc.appendPosition, doc)).attr("style","padding: 10px 10px;	border: solid 1px rgb(230, 225, 225);	border-radius: 3px;");
-		var closebtn = $("<image class='close-button' style='position:absolute; right:15px;top:15px;display:none;width:18px;height:18px;border:solid 1px gray;cursor:pointer;z-index:1024;'></>");
-		closebtn.attr("src", "data:image/gif;base64,R0lGODlhEgASAPIGAHd3d4iIiKqqqru7u93d3e7u7v///wAAACH5BAAAAAAALAAAAAASABIAAANKaLrc/pCNJ+Cs0uCs9uzcUn1KsWnNWQQO+6xQUDRw5Brz/ZCLafUzkeNTKMpKvsVgViSwZMUCAcAQNG8BgpSacjayXMdpEY6YDQkAOw==")
-		closebtn.appendTo(wb_content).bind("click", function(){
-			wb_content.remove();
-		})
-		closebtn.hover(function(){
-			$(this).css("border-color", "black")
-		}, function(){
-			$(this).css("border-color", "gray")
-		})
+		wb_content.appendTo($( bk_configc.appendPosition, doc));
+		$("<br/>").insertAfter(wb_content);
 		var hcss = {
 			position: "absolute",
 			cursor:"pointer"
 		}
-		var htop = $("<div class='htop hh'/>").appendTo(wb_content);
-		var hright = $("<div class='hright hh'/>").appendTo(wb_content);
-		var hbottom = $("<div class='hbottom hh'/>").appendTo(wb_content);
-		var hleft = $("<div class='hleft hh'/>").appendTo(wb_content);
-		wb_content.find(".hh").css(hcss);
+		var contentDetail = wb_content.children().eq(0);
+		var htop = $("<div class='htop hh'/>").appendTo(contentDetail);
+		var hright = $("<div class='hright hh'/>").appendTo(contentDetail);
+		var hbottom = $("<div class='hbottom hh'/>").appendTo(contentDetail);
+		var hleft = $("<div class='hleft hh'/>").appendTo(contentDetail);
+		contentDetail.find(".hh").css(hcss);
 		setTimeout(function(){
-			var style = doc.defaultView.getComputedStyle(wb_content[0],null);
+			var style = doc.defaultView.getComputedStyle(contentDetail[0],null);
 			var width = style.width;
 			var height = style.height;
 			var margintop = -(parseInt(height) +10)+"px";
@@ -594,9 +592,9 @@ WB.prototype.insert = function(){
 			hright.css("height", parseInt(height)+20).css("width", "10px").css("margin-top", margintop).css("margin-left", width);
 			hbottom.css("height", "10px").css("width", parseInt(width)+20).css("margin-left", "-10px");;
 			hleft.css("height", parseInt(height)+20).css("width", "10px").css("margin-left", "-10px").css("margin-top", margintop);
-			wb_content.find(".hh").bind("click", function(event){
-				wb_content.css("background-color", "rgb(160, 160, 178)").addClass("selectedContent");
-				wb_content.find(".close-button").css("display", "block");
+			contentDetail.find(".hh").bind("click", function(event){
+				contentDetail.css("background-color", "rgb(160, 160, 178)").addClass("selectedContent");
+				contentDetail.find(".close-button").css("display", "block");
 				$(this).css("background-color", "");
 				event.stopPropagation();
 			}).hover(function(){
@@ -606,6 +604,16 @@ WB.prototype.insert = function(){
 				$(this).css("background-color", "");
 			})
 		},100)
+		var closebtn = $("<image title='删除' class='close-button' style='position:absolute; right:0px;top:0px;display:none;width:18px;height:18px;border:solid 1px gray;cursor:pointer;z-index:1024;'></>");
+		closebtn.attr("src", "data:image/gif;base64,R0lGODlhEgASAPIGAHd3d4iIiKqqqru7u93d3e7u7v///wAAACH5BAAAAAAALAAAAAASABIAAANKaLrc/pCNJ+Cs0uCs9uzcUn1KsWnNWQQO+6xQUDRw5Brz/ZCLafUzkeNTKMpKvsVgViSwZMUCAcAQNG8BgpSacjayXMdpEY6YDQkAOw==")
+		closebtn.appendTo(contentDetail).bind("click", function(){
+			wb_content.remove();
+		})
+		closebtn.hover(function(){
+			$(this).css("border-color", "black")
+		}, function(){
+			$(this).css("border-color", "gray")
+		})
 		$(doc).bind("click", function(){
 			$(".selectedContent",doc).css("background-color","").removeClass("selectedContent").find(".close-button").css("display","none");
 		})

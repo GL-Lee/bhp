@@ -9,10 +9,6 @@
       "css": ["css/openpanel.css"]
     }
   ],
-   "browser_action": {
-      "default_icon": "/images/icon_64.png",
-      "default_popup": "pop.html"
-   },
    "description": "365\u5929\u6C14",
    "icons": {
       "128": "/images/icon_128.png",
