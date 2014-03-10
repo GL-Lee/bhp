@@ -586,6 +586,9 @@ WB.prototype.insert = function(){
 		var hbottom = $("<div class='hbottom hh'/>").appendTo(contentDetail);
 		var hleft = $("<div class='hleft hh'/>").appendTo(contentDetail);
 		contentDetail.find(".hh").css(hcss);
+
+		var range = doc.createRange();
+		var selection = doc.getSelection();
 		setTimeout(function(){
 			var style = doc.defaultView.getComputedStyle(contentDetail[0],null);
 			var width = style.width;
@@ -596,9 +599,12 @@ WB.prototype.insert = function(){
 			hbottom.css("height", "10px").css("width", parseInt(width)+20).css("margin-left", "-10px");;
 			hleft.css("height", parseInt(height)+20).css("width", "10px").css("margin-left", "-10px").css("margin-top", margintop);
 			contentDetail.find(".hh").bind("click", function(event){
+				var $this = $(this);
 				contentDetail.css("background-color", "rgb(160, 160, 178)").addClass("selectedContent");
 				contentDetail.find(".close-button").css("display", "block");
-				$(this).css("background-color", "");
+				$this.css("background-color", "");
+				execUtil.init(doc);
+				execUtil.select(wb_content);
 				event.stopPropagation();
 			}).hover(function(){
 				if($(this).parents(".selectedContent").length == 0)
@@ -621,6 +627,73 @@ WB.prototype.insert = function(){
 			$(".selectedContent",doc).css("background-color","").removeClass("selectedContent").find(".close-button").css("display","none");
 		})
 
+}
+var execUtil = {
+	doc: null,
+	wb:[],
+	select: function(wb){
+		this.wb.push(wb);
+	},
+	cut: function(){
+		for(var i = 0; i < this.wb.length; i++)
+		this.wb[i].remove();
+	},
+	paste: function(){
+		var p = $(this.doc.getSelection().anchorNode);
+		for(var i = 0; i < this.wb.length; i++){
+			if(p[0] == this.doc.body)
+				p = $("<div/>").appendTo(this.doc.body);
+			this.wb[i].insertAfter(p);
+			this.wb[i].find(".hh").bind("click", function(event){
+				var $this = $(this);
+				var content = $this.parents(".WB_feed_datail");
+				content.css("background-color", "rgb(160, 160, 178)").addClass("selectedContent");
+				content.find(".close-button").css("display", "block");
+				$this.css("background-color", "");
+				execUtil.select(content.parent());
+				event.stopPropagation();
+			}).hover(function(){
+				if($(this).parents(".selectedContent").length == 0)
+				$(this).css("background-color", "gray");
+			}, function(){
+				$(this).css("background-color", "");
+			})
+			var closebtn = this.wb[i].find(".close-button");
+			closebtn.bind("click", function(){
+				$(this).parents(".wbpick_content").remove();
+			})
+			closebtn.hover(function(event){
+				$(this).css("border-color", "black")
+			}, function(){
+				$(this).css("border-color", "gray")
+			})
+			p = this.wb[i];
+		}
+		this.wb.length = 0;
+	},
+	init: function(doc){
+		if(!this.doc){
+			this.doc = doc;
+			this.bindEvents();
+		}
+	},
+	bindEvents: function(){
+		var _this = this;
+		this.doc.addEventListener("keydown", function(event){
+			if(event.ctrlKey && event.keyCode == 88 && _this.wb.length > 0){
+				_this.cut();
+				event.stopPropagation();
+				event.preventDefault();
+			}
+		},true)
+		this.doc.addEventListener("keydown", function(event){
+			if(event.ctrlKey && event.keyCode == 86 && _this.wb.length > 0){
+				_this.paste();
+				event.stopPropagation();
+				event.preventDefault();
+			}
+		},true)
+	}
 }
 WB.prototype.convertTime = function(min){
 	var min = parseInt(min);
@@ -669,6 +742,7 @@ chrome.runtime.onMessage.addListener(
 	    	tconfigs.type = request.type;
 	    	var wb = new WB(tconfigs, bk_url, wb_url,  request.content);
 	    	wb.insert();
+	    		    	
 	    	var m = new Date().getTime();
 	    	console.log((m-d)/1000);
 	    	inputPanel.hide();
