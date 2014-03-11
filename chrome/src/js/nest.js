@@ -647,8 +647,8 @@ var execUtil = {
 		if(p[0] == this.doc.body)
 			p = $("<div/>").appendTo(this.doc.body);
 		execUtil.wb.insertAfter(p);
-		if(execUtil.wb.last().next("div").length == 0)
-			$("<div><br/></div>").appendTo($(execUtil.doc.body));
+		// if(execUtil.wb.last().next("div").length == 0)
+		// 	$("<div><br/></div>").appendTo($(execUtil.doc.body));
 		var wb = execUtil.wb;
 		for(var i = 0; i < wb.length; i++){
 			$(wb[i]).find(".hh").bind("click", function(event){
@@ -673,6 +673,7 @@ var execUtil = {
 			}, function(){
 				$(this).css("border-color", "gray")
 			})
+			$("<div><br/></div>").insertAfter($(wb[i]));
 		}
 		execUtil.wb.length = 0;
 	},
@@ -786,7 +787,7 @@ var dragUtil = {
 		else{
 			dragUtil.container = $();
 		}
-		if(dragUtil.dragedwb[0].isEqualNode(dragUtil.container[0])){
+		if(dragUtil.dragedwb.length > 0 && dragUtil.dragedwb[0].isEqualNode(dragUtil.container[0])){
 			dragUtil.container = $();
 		}
 		ev.preventDefault();

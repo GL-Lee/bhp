@@ -9,13 +9,13 @@
       "css": ["css/openpanel.css"]
     }
   ],
-   "description": "365\u5929\u6C14",
+   "description": "博客助手",
    "icons": {
       "128": "/images/icon_128.png",
       "16": "/images/icon_16.png"
    },
    "manifest_version": 2,
-   "name": "365\u5929\u6C14",
+   "name": "博客助手",
    "permissions": [ "tabs", "http://*/*", "https://*/*", "storage", "notifications","webRequest", "webRequestBlocking",
                   "http://control.blog.sina.com.cn/*"],
    "version": "1.0.0"
