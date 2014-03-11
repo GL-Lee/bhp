@@ -475,7 +475,7 @@ WB.prototype.insert = function(){
 		if(!wb_homeUrl)wb_homeUrl = content.find(wb_configc.homeUrl).attr("href");
 		content.find(wb_configc.hiddenItems).remove();
 		
-		var contentHTML =  	"<div class='wbpick_content' draggable='true' ondragstart='dragUtil.dragstart(event);'>"+
+		var contentHTML =  	"<div class='wbpick_content' draggable='true' >"+
 							"<div class='WB_feed_datail'>"+
 								'<div class="WB_face">'+
 	                				'<a class="W_face_radius">'+
@@ -603,12 +603,16 @@ WB.prototype.insert = function(){
 			hleft.css("height", parseInt(height)+20).css("width", "10px").css("margin-left", "-10px").css("margin-top", margintop);
 			contentDetail.find(".hh").bind("click", function(event){
 				var $this = $(this);
-				contentDetail.css("background-color", "rgb(160, 160, 178)").addClass("selectedContent");
+				contentDetail.css("background-color", "rgb(160, 160, 178)").parent().addClass("selectedContent");
 				contentDetail.find(".close-button").css("display", "block");
 				$this.css("background-color", "");
 				execUtil.init(doc);
-				execUtil.select(wb_content);
+				
 				event.stopPropagation();
+			}).bind("mousedown", function(){
+				dragUtil.dragedwb = wb_content;
+			}).bind("mouseup", function(){
+				dragUtil.dragedwb = $();
 			}).hover(function(){
 				if($(this).parents(".selectedContent").length == 0)
 				$(this).css("background-color", "gray");
@@ -627,33 +631,32 @@ WB.prototype.insert = function(){
 			$(this).css("border-color", "gray")
 		})
 		$(doc).bind("click", function(){
-			$(".selectedContent",doc).css("background-color","").removeClass("selectedContent").find(".close-button").css("display","none");
+			$(".selectedContent",doc).removeClass("selectedContent").children().css("background-color","").find(".close-button").css("display","none");
 		})
 
 }
 var execUtil = {
 	doc: null,
-	wb:[],
-	select: function(wb){
-		this.wb.push(wb);
-	},
+	wb:null,
 	cut: function(){
-		for(var i = 0; i < this.wb.length; i++)
-		this.wb[i].remove();
+		execUtil.wb = $(".selectedContent", execUtil.doc);
+		execUtil.wb.remove();
 	},
 	paste: function(){
 		var p = $(this.doc.getSelection().anchorNode);
-		for(var i = 0; i < this.wb.length; i++){
-			if(p[0] == this.doc.body)
-				p = $("<div/>").appendTo(this.doc.body);
-			this.wb[i].insertAfter(p);
-			this.wb[i].find(".hh").bind("click", function(event){
+		if(p[0] == this.doc.body)
+			p = $("<div/>").appendTo(this.doc.body);
+		execUtil.wb.insertAfter(p);
+		if(execUtil.wb.last().next("div").length == 0)
+			$("<div><br/></div>").appendTo($(execUtil.doc.body));
+		var wb = execUtil.wb;
+		for(var i = 0; i < wb.length; i++){
+			$(wb[i]).find(".hh").bind("click", function(event){
 				var $this = $(this);
 				var content = $this.parents(".WB_feed_datail");
-				content.css("background-color", "rgb(160, 160, 178)").addClass("selectedContent");
+				content.css("background-color", "rgb(160, 160, 178)").parent().addClass("selectedContent");
 				content.find(".close-button").css("display", "block");
 				$this.css("background-color", "");
-				execUtil.select(content.parent());
 				event.stopPropagation();
 			}).hover(function(){
 				if($(this).parents(".selectedContent").length == 0)
@@ -661,7 +664,7 @@ var execUtil = {
 			}, function(){
 				$(this).css("background-color", "");
 			})
-			var closebtn = this.wb[i].find(".close-button");
+			var closebtn = $(wb[i]).find(".close-button");
 			closebtn.bind("click", function(){
 				$(this).parents(".wbpick_content").remove();
 			})
@@ -670,9 +673,8 @@ var execUtil = {
 			}, function(){
 				$(this).css("border-color", "gray")
 			})
-			p = this.wb[i];
 		}
-		this.wb.length = 0;
+		execUtil.wb.length = 0;
 	},
 	init: function(doc){
 		if(!this.doc){
@@ -683,10 +685,8 @@ var execUtil = {
 	bindEvents: function(){
 		var _this = this;
 		this.doc.addEventListener("keydown", function(event){
-			if(event.ctrlKey && event.keyCode == 88 && _this.wb.length > 0){
+			if(event.ctrlKey && event.keyCode == 88){
 				_this.cut();
-				event.stopPropagation();
-				event.preventDefault();
 			}
 		},true)
 		this.doc.addEventListener("keydown", function(event){
@@ -767,6 +767,9 @@ var dragUtil = {
 	drop: function(ev){
 		if(dragUtil.container.length > 0){
 			dragUtil.dragedwb.insertAfter(dragUtil.container);
+			if(dragUtil.dragedwb.next("div").length == 0){
+				$("<div><br/></div>").insertAfter(dragUtil.dragedwb);
+			}
 			dragUtil.container = $();
 		}
 		ev.preventDefault();
@@ -783,10 +786,14 @@ var dragUtil = {
 		else{
 			dragUtil.container = $();
 		}
+		if(dragUtil.dragedwb[0].isEqualNode(dragUtil.container[0])){
+			dragUtil.container = $();
+		}
 		ev.preventDefault();
 	},
 	bindEvents: function(){
 		$(this.doc.body).bind("dragover", this.dragover).bind("drop", this.drop);
+		// this.wb.bind("dragstart", function(){console.log(1)})
 	}
 }
 var bk_url = location.href;
