@@ -45,6 +45,7 @@ var configs = {
 									}
 								})
 								$(".hh, .close-button", doc).remove();
+
 								// var te = t.innerHTML;
 								// te = te.replace(/<a /g, "<wb_pick_a_tag ");
 								// te = te.replace(/\/a>/g,"/wb_pick_a_tag>");
@@ -474,7 +475,7 @@ WB.prototype.insert = function(){
 		if(!wb_homeUrl)wb_homeUrl = content.find(wb_configc.homeUrl).attr("href");
 		content.find(wb_configc.hiddenItems).remove();
 		
-		var contentHTML =  	"<div class='wbpick_content'>"+
+		var contentHTML =  	"<div class='wbpick_content' draggable='true' ondragstart='dragUtil.dragstart(event);'>"+
 							"<div class='WB_feed_datail'>"+
 								'<div class="WB_face">'+
 	                				'<a class="W_face_radius">'+
@@ -495,6 +496,7 @@ WB.prototype.insert = function(){
 		wb_content.find(".WB_name").attr("href", wb_homeUrl).text(content.find(wb_configc.username_selector).text());
 		wb_content.find(".WB_detail").append(content.find(wb_configc.detail_selector));
 		wb_content.find(".WB_info").append(content.find(".pf_icon a, .icother a"))//暂时用以新浪微薄,以后需要放到设置里面
+
 		if(wb_configc.time){
 			var timeEle = wb_content.find(wb_configc.time);
 			timeEle.text(timeEle.attr("title"));
@@ -575,7 +577,8 @@ WB.prototype.insert = function(){
 		// wb_content.find(".wbpick-detail").bind("click", )
 	}
 		wb_content.appendTo($( bk_configc.appendPosition, doc));
-		$("<br/>").insertAfter(wb_content);
+		dragUtil.init(doc, wb_content);
+		$("<div><br/></div>").insertAfter(wb_content);
 		var hcss = {
 			position: "absolute",
 			cursor:"pointer"
@@ -749,6 +752,43 @@ chrome.runtime.onMessage.addListener(
 	    }
 	}
 );
+var dragUtil = {
+	wb:null,
+	dragedwb:null,
+	doc:null,
+	container:null,
+	init: function(doc,wb){
+		if(this.doc != doc){
+			this.doc = doc;
+			this.bindEvents();
+		}
+		this.wb = wb;
+	},
+	drop: function(ev){
+		if(dragUtil.container.length > 0){
+			dragUtil.dragedwb.insertAfter(dragUtil.container);
+			dragUtil.container = $();
+		}
+		ev.preventDefault();
+	},
+	dragstart: function(ev){
+		dragUtil.dragedwb = $(ev.target);
+	},
+	dragover: function(ev){
+		if(ev.target.tagName.toLowerCase() != "body"){
+			dragUtil.container = $(ev.target);
+			if(dragUtil.container.parents(".wbpick_content").length > 0)
+				dragUtil.container = dragUtil.container.parents(".wbpick_content");
+		}
+		else{
+			dragUtil.container = $();
+		}
+		ev.preventDefault();
+	},
+	bindEvents: function(){
+		$(this.doc.body).bind("dragover", this.dragover).bind("drop", this.drop);
+	}
+}
 var bk_url = location.href;
 var bk_config = null;
 var bk_configs = configs.bk_configs;
